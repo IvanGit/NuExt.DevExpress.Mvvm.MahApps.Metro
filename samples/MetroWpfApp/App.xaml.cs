@@ -41,6 +41,8 @@ namespace MetroWpfApp
 
         public PerformanceMonitor? PerformanceMonitor { get; private set; }
 
+        public IServiceContainer ServiceContainer => DevExpress.Mvvm.ServiceContainer.Default;
+
         public AppSettings Settings { get; } = new();
 
         public Thread Thread => Dispatcher.Thread;
@@ -51,20 +53,20 @@ namespace MetroWpfApp
 
         public EnvironmentService? EnvironmentService
         {
-            get => (EnvironmentService)ServiceContainer.Default.GetService<IEnvironmentService>();
+            get => (EnvironmentService)ServiceContainer.GetService<IEnvironmentService>();
             private set
             {
                 var environmentService = EnvironmentService;
                 if (environmentService != null)
                 {
-                    ServiceContainer.Default.UnregisterService(environmentService);
+                    ServiceContainer.UnregisterService(environmentService);
                 }
-                ServiceContainer.Default.RegisterService(value);
+                ServiceContainer.RegisterService(value);
                 OnPropertyChanged();
             }
         }
 
-        private ISettingsService SettingsService => ServiceContainer.Default.GetService<ISettingsService>();
+        private ISettingsService SettingsService => ServiceContainer.GetService<ISettingsService>();
 
         #endregion
 
@@ -72,7 +74,7 @@ namespace MetroWpfApp
 
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            var logger = ServiceContainer.Default.GetService<ILogger>();
+            var logger = ServiceContainer.GetService<ILogger>();
             logger?.LogError(e.Exception, "Dispatcher Unhandled Exception: {Exception}.", e.Exception.Message);
             e.Handled = true;
         }
@@ -81,8 +83,8 @@ namespace MetroWpfApp
         {
             _lifetime.Dispose();
 
-            var logger = ServiceContainer.Default.GetService<ILogger>();
-            var windowsService = ServiceContainer.Default.GetService<IOpenWindowsService>();
+            var logger = ServiceContainer.GetService<ILogger>();
+            var windowsService = ServiceContainer.GetService<IOpenWindowsService>();
             try
             {
                 if (windowsService != null)
@@ -106,9 +108,9 @@ namespace MetroWpfApp
             {
                 return;
             }
-            var logger = ServiceContainer.Default.GetService<ILogger>();
+            var logger = ServiceContainer.GetService<ILogger>();
             Debug.Assert(logger != null);
-            var windowsService = ServiceContainer.Default.GetService<IOpenWindowsService>();
+            var windowsService = ServiceContainer.GetService<IOpenWindowsService>();
             try
             {
                 await windowsService.DisposeAsync();
@@ -134,20 +136,20 @@ namespace MetroWpfApp
 
             EnvironmentService = new EnvironmentService(AppDomain.CurrentDomain.BaseDirectory, e.Args);
             //https://docs.devexpress.com/WPF/17444/mvvm-framework/services/getting-started
-            ServiceContainer.Default.RegisterService(new DispatcherService() { Name = "AppDispatcherService" });
-            ServiceContainer.Default.RegisterService(this);
-            //ServiceContainer.Default.RegisterService(new OpenWindowsService());
+            ServiceContainer.RegisterService(new DispatcherService() { Name = "AppDispatcherService" });
+            ServiceContainer.RegisterService(this);
+            //ServiceContainer.RegisterService(new OpenWindowsService());
 
             var configuration = BuildConfiguration(EnvironmentService);
-            ServiceContainer.Default.RegisterService(configuration);
+            ServiceContainer.RegisterService(configuration);
             ConfigureLogging(EnvironmentService);
             InitializeSettings();
             InitializeAppTheme(configuration);
 
-            var logger = ServiceContainer.Default.GetService<ILogger>();
+            var logger = ServiceContainer.GetService<ILogger>();
             logger.LogInformation("Application started.");
 
-            ServiceContainer.Default.RegisterService(new MoviesService(Path.Combine(EnvironmentService.BaseDirectory, "movies.json")));
+            ServiceContainer.RegisterService(new MoviesService(Path.Combine(EnvironmentService.BaseDirectory, "movies.json")));
 
             PerformanceMonitor = new PerformanceMonitor(Process.GetCurrentProcess(), CultureInfo.InvariantCulture)
             {
@@ -189,7 +191,7 @@ namespace MetroWpfApp
             return configuration;
         }
 
-        private static void ConfigureLogging(EnvironmentService environmentService)
+        private void ConfigureLogging(EnvironmentService environmentService)
         {
             Debug.Assert(IOUtils.NormalizedPathEquals(environmentService.BaseDirectory, Directory.GetCurrentDirectory()));
             var configFile = Path.Combine("Config", "nlog.config.json");
@@ -210,11 +212,11 @@ namespace MetroWpfApp
                 builder.AddNLog(config);
             });
             LogManager.Configuration.Variables["basedir"] = environmentService.LogsDir;
-            ServiceContainer.Default.RegisterService(loggerFactory);
+            ServiceContainer.RegisterService(loggerFactory);
 
             var logger = loggerFactory.CreateLogger("App");
             Debug.Assert(logger.IsEnabled(LogLevel.Debug));
-            ServiceContainer.Default.RegisterService(logger);
+            ServiceContainer.RegisterService(logger);
         }
 
         private void InitializeAppTheme(IConfiguration configuration)
@@ -279,7 +281,7 @@ namespace MetroWpfApp
             }
             catch (Exception ex)
             {
-                var logger = ServiceContainer.Default.GetService<ILogger>();
+                var logger = ServiceContainer.GetService<ILogger>();
                 logger?.LogError(ex, "Unexpected error");
             }
         }

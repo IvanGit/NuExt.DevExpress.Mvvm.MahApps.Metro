@@ -1,6 +1,5 @@
 ﻿using ControlzEx.Theming;
 using DevExpress.Mvvm;
-using MetroWpfApp.Services;
 using MetroWpfApp.Views;
 using System.Diagnostics;
 using System.Windows;
@@ -37,7 +36,6 @@ namespace MetroWpfApp.ViewModels
         }
 
         #endregion
-
 
         #region Command Methods
 
