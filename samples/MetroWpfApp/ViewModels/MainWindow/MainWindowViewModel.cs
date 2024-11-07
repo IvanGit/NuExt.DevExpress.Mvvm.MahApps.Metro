@@ -7,6 +7,7 @@ using MetroWpfApp.Views;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Media;
 
@@ -14,7 +15,6 @@ namespace MetroWpfApp.ViewModels
 {
     internal sealed partial class MainWindowViewModel : WindowViewModel, IMainWindowViewModel
     {
-
         #region Properties
 
         public IAsyncDocument? ActiveDocument
@@ -29,13 +29,17 @@ namespace MetroWpfApp.ViewModels
 
         #region Services
 
-        public IApplicationService ApplicationService => GetService<IApplicationService>();
+        public IApplicationService ApplicationService => GetService<IApplicationService>()!;
 
-        public IAsyncDocumentManagerService DocumentManagerService => GetService<IAsyncDocumentManagerService>("Documents");
+        public IAsyncDocumentManagerService? DocumentManagerService => GetService<IAsyncDocumentManagerService>("Documents");
 
-        private IMoviesService MoviesService => GetService<IMoviesService>();
+        public IEnvironmentService EnvironmentService => GetService<IEnvironmentService>()!;
 
-        private ISettingsService SettingsService => GetService<ISettingsService>();
+        private IMessageBoxService? MessageBoxService => GetService<IMessageBoxService>();
+
+        private IMoviesService MoviesService => GetService<IMoviesService>()!;
+
+        private ISettingsService? SettingsService => GetService<ISettingsService>();
 
         #endregion
 
@@ -51,15 +55,16 @@ namespace MetroWpfApp.ViewModels
 
         public async ValueTask CloseMovieAsync(MovieModel movie, CancellationToken cancellationToken)
         {
-            var doc = DocumentManagerService.FindDocumentById(new MovieDocument(movie));
+            cancellationToken.ThrowIfCancellationRequested();
+            var doc = DocumentManagerService!.FindDocumentById(new MovieDocument(movie));
             if (doc == null) return;
             await doc.CloseAsync();
         }
 
         private ValueTask LoadMenuAsync(CancellationToken cancellationToken)
         {
-            MenuItems.Clear();
             cancellationToken.ThrowIfCancellationRequested();
+            MenuItems.Clear();
             var menuItems = new IMenuItemViewModel[]
             {
                 new MenuItemViewModel()
@@ -93,6 +98,10 @@ namespace MetroWpfApp.ViewModels
                                 .OrderBy(a => a.Key)
                                 .Select(a => new AccentColorMenuItemViewModel { Header = a.Key, ColorBrush = a.First().ShowcaseBrush, Command = ChangeAccentColorCommand, CommandParameter = a.Key }))
                         },
+                        null,
+                        new MenuItemViewModel() { Header = "Hide Active Document", CommandParameter = false, Command = ShowHideActiveDocumentCommand },
+                        new MenuItemViewModel() { Header = "Show Active Document", CommandParameter = true, Command = ShowHideActiveDocumentCommand },
+                        new MenuItemViewModel() { Header = "Close Active Document", Command = CloseActiveDocumentCommand }
                     })
                 }
             };
@@ -103,30 +112,30 @@ namespace MetroWpfApp.ViewModels
         protected override async ValueTask OnDisposeAsync()
         {
             var doc = DocumentManagerService?.FindDocumentById(default(Movies));
-            Settings.MoviesOpened = doc is not null;
+            Settings!.MoviesOpened = doc is not null;
 
             await base.OnDisposeAsync();
         }
 
-        protected override void OnInitializeInRuntime()
+        protected override void OnError(Exception ex, [CallerMemberName] string? callerName = null)
         {
-            Debug.Assert(DocumentManagerService is null, $"{nameof(DocumentManagerService)} is not null");
-            base.OnInitializeInRuntime();
-            UpdateTitle();
-
-            CreateCommands();
-            CreateSettings();
+            base.OnError(ex, callerName);
+            MessageBoxService?.ShowMessage($"An error has occurred in {callerName}:{Environment.NewLine}{ex.Message}", "Error", MessageButton.OK, MessageIcon.Error);
         }
 
         protected override async ValueTask OnInitializeAsync(CancellationToken cancellationToken)
         {
+            Debug.Assert(EnvironmentService != null, $"{nameof(EnvironmentService)} is null");
             Debug.Assert(MoviesService != null, $"{nameof(MoviesService)} is null");
+
+            cancellationToken.ThrowIfCancellationRequested();
             await LoadMenuAsync(cancellationToken);
         }
 
         public async ValueTask OpenMovieAsync(MovieModel movie, CancellationToken cancellationToken)
         {
-            var document = await DocumentManagerService.FindDocumentByIdOrCreateAsync(new MovieDocument(movie), async x =>
+            cancellationToken.ThrowIfCancellationRequested();
+            var document = await DocumentManagerService!.FindDocumentByIdOrCreateAsync(new MovieDocument(movie), async x =>
             {
                 var vm = new MovieViewModel();
                 var doc = x.CreateDocument(nameof(MovieView), vm, movie, this);
@@ -163,6 +172,5 @@ namespace MetroWpfApp.ViewModels
         }
 
         #endregion
-
     }
 }

@@ -7,7 +7,7 @@ namespace MetroWpfApp.ViewModels
     {
         #region Properties
 
-        public MoviesSettings Settings
+        public MoviesSettings? Settings
         {
             get { return GetProperty(() => Settings); }
             set { SetProperty(() => Settings, value); }
@@ -19,32 +19,35 @@ namespace MetroWpfApp.ViewModels
 
         private void CreateSettings()
         {
+            if (Settings != null)
+            {
+                return;
+            }
             Settings = new MoviesSettings();
             Settings.Initialize();
             Settings.SuspendChanges();
-            Lifetime.Add(SaveSettings);
+            Lifetime.AddBracket(LoadSettings, SaveSettings);
         }
 
-        private bool LoadSettings()
+        private void LoadSettings()
         {
             Debug.Assert(IsInitialized, $"{GetType().FullName} ({DisplayName ?? "Unnamed"}) ({GetHashCode()}) is not initialized.");
             Debug.Assert(SettingsService != null, $"{nameof(SettingsService)} is null");
-            if (Settings.IsSuspended)
+            if (Settings!.IsSuspended)
             {
                 Settings.ResumeChanges();
                 Debug.Assert(Settings.IsSuspended == false);
                 using (Settings.SuspendDirty())
                 {
-                    return SettingsService!.LoadSettings(Settings);
+                    SettingsService!.LoadSettings(Settings);
                 }
             }
-            return false;
         }
 
         private void SaveSettings()
         {
             Debug.Assert(SettingsService != null, $"{nameof(SettingsService)} is null");
-            if (Settings.IsDirty)
+            if (Settings!.IsDirty)
             {
                 if (SettingsService!.SaveSettings(Settings))
                 {
@@ -54,6 +57,5 @@ namespace MetroWpfApp.ViewModels
         }
 
         #endregion
-
     }
 }

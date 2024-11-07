@@ -1,24 +1,13 @@
 ﻿using DevExpress.Mvvm;
+using MetroWpfApp.Interfaces.Services;
 using System.IO;
 
 namespace MetroWpfApp.Services
 {
-    public sealed class EnvironmentService : EnvironmentServiceBase, IEnvironmentService
+    internal sealed class EnvironmentService : EnvironmentServiceBase, IEnvironmentService
     {
-        public EnvironmentService(string baseDirectory, string[] args) : base(baseDirectory, args)
+        public EnvironmentService(string baseDirectory, params string[] args) : base(baseDirectory, Path.Combine(baseDirectory, "AppData"), args)
         {
-            ConfigDir = Path.Combine(BaseDirectory, "Config");
-            IOUtils.CheckDirectory(ConfigDir, true);
-            LogsDir = Path.Combine(WorkingDirectory, "Logs");
-            IOUtils.CheckDirectory(LogsDir, true);
         }
-
-        #region Properties
-
-        public string ConfigDir { get; }
-
-        public string LogsDir { get; }
-
-        #endregion
     }
 }

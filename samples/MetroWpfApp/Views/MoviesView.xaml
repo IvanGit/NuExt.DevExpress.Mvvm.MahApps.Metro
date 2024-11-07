@@ -12,7 +12,26 @@
              d:DataContext="{d:DesignInstance {x:Type viewModels:MoviesViewModel}, IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
+
         <viewModels:MoviesViewModelBindingProxy x:Key="MoviesProxy" DataContext="{Binding}" />
+
+        <DataTemplate x:Key="TreeViewItemBehaviors">
+            <ContentControl>
+                <dxmvvm:EventToCommand EventName="MouseDoubleClick" Command="{Binding Source={StaticResource MoviesProxy}, Path=DataContext.OpenMovieCommand}" EventArgsConverter="{StaticResource ItemsControlMouseEventArgsConverter}"/>
+            </ContentControl>
+        </DataTemplate>
+
+        <Style x:Key="TreeViewItemContainerStyle" TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+            <d:Style.DataContext>
+                <x:Type Type="models:MovieModelBase" />
+            </d:Style.DataContext>
+            <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.Gray.SemiTransparent}" />
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+            <Setter Property="dxmvvm:Interaction.BehaviorsTemplate" Value="{StaticResource TreeViewItemBehaviors}"/>
+        </Style>
+
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding LoadedCommand}" />
@@ -75,46 +94,28 @@
                     <TextBlock Text="Director"/>
                 </Border>
                 <Border Grid.Column="3" BorderThickness="0,1,1,0">
-                    <Rectangle Width="{Binding Path=(dxmvvm:ScrollViewerHelper.VerticalScrollBarActualWidth), ElementName=MoviesTree}"/>
+                    <Rectangle Width="{Binding Path=(dxmvvm:ScrollBarVisibilityBehavior.VerticalScrollBarActualWidth), ElementName=MoviesTree}"/>
                 </Border>
             </Grid>
 
             <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
-                <Button Content="Expand All" Command="{Binding ExpandCollapseCommand}" CommandParameter="{x:Static mah:BooleanBoxes.TrueBox}"/>
-                <Button Content="Collapse All" Command="{Binding ExpandCollapseCommand}" CommandParameter="{x:Static mah:BooleanBoxes.FalseBox}"/>
+                <Button Margin="2" Content="Expand All" Command="{Binding ExpandCollapseCommand}" CommandParameter="{x:Static mah:BooleanBoxes.TrueBox}"/>
+                <Button Margin="2" Content="Collapse All" Command="{Binding ExpandCollapseCommand}" CommandParameter="{x:Static mah:BooleanBoxes.FalseBox}"/>
                 <TextBlock Margin="5,0" VerticalAlignment="Center" 
                            Text="You can move items by drag'n'drop between groups with mouse"/>
             </StackPanel>
 
             <TreeView x:Name="MoviesTree" BorderThickness="1" AllowDrop="True"
-                      ItemsSource="{Binding MoviesView}" 
+                      ItemsSource="{Binding MoviesView}"
                       ItemTemplateSelector="{StaticResource MovieItemTemplateSelector}"
-                      Style="{StaticResource MahApps.Styles.TreeView.Virtualized}">
+                      Style="{StaticResource MahApps.Styles.TreeView.Virtualized}"
+                      ItemContainerStyle="{StaticResource TreeViewItemContainerStyle}">
                 <dxmvvm:Interaction.Behaviors>
                     <dxmvvm:TreeViewSelectedItemBehavior SelectedItem="{Binding SelectedItem}" />
                     <dxmvvm:ScrollBarVisibilityBehavior />
                     <dxmvvm:TreeViewDragDropBehavior MoveCommand="{Binding MoveCommand}" />
-                    <!--<dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding MouseDoubleClickCommand}" CommandParameter="{Binding Path=SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox, AncestorLevel=1}}" EventName="MouseDoubleClick" />-->
+                    <!--<dxmvvm:EventToCommand PassEventArgsToCommand="True" Command="{Binding MouseDoubleClickCommand}" CommandParameter="{Binding Path=SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=TreeView, AncestorLevel=1}}" EventName="MouseDoubleClick" />-->
                 </dxmvvm:Interaction.Behaviors>
-                <TreeView.ItemContainerStyle>
-                    <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
-                        <d:Style.DataContext>
-                            <x:Type Type="models:MovieModelBase" />
-                        </d:Style.DataContext>
-                        <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.Gray.SemiTransparent}" />
-                        <Setter Property="BorderThickness" Value="1"/>
-                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
-                        <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
-                            <Setter.Value>
-                                <DataTemplate>
-                                    <ContentControl>
-                                        <dxmvvm:EventToCommand EventName="MouseDoubleClick" Command="{Binding Source={StaticResource MoviesProxy}, Path=DataContext.OpenMovieCommand}" EventArgsConverter="{dxmvvm:ItemsControlMouseEventArgsConverter}"/>
-                                    </ContentControl>
-                                </DataTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </TreeView.ItemContainerStyle>
             </TreeView>
         </DockPanel>
 

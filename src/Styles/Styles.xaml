@@ -3,6 +3,7 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/NuExt.DevExpress.Mvvm.MahApps.Metro;component/Styles/Menus.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/NuExt.DevExpress.Mvvm.MahApps.Metro;component/Styles/MetroDialog.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

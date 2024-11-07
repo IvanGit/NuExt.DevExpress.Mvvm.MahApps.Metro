@@ -11,10 +11,10 @@
                 <ResourceDictionary Source="/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <local:AppBindingProxy x:Key="AppBindingProxy" DataContext="{x:Static Application.Current}" />
-            <dxmvvm:MessageBoxService x:Key="AppMessageBoxService" x:Name="AppMessageBoxService" />
-            <dxmvvm:OpenWindowsService x:Key="AppOpenWindowsService" x:Name="AppOpenWindowsService"/>
-            <dxmvvm:SettingsService x:Key="AppSettingsService" x:Name="AppSettingsService" 
-                                    Prefix="App" DirectoryName="{Binding Path=DataContext.EnvironmentService.SettingsDirectory, Source={StaticResource AppBindingProxy}, FallbackValue={x:Null}}"/>
+            <dxmvvm:MessageBoxService x:Key="AppMessageBoxService" />
+            <dxmvvm:OpenWindowsService x:Key="AppOpenWindowsService" />
+            <dxmvvm:SettingsService x:Key="AppSettingsService" Prefix="App" 
+	                            DirectoryName="{Binding Path=DataContext.EnvironmentService.SettingsDirectory, Source={StaticResource AppBindingProxy}, FallbackValue={x:Null}}"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

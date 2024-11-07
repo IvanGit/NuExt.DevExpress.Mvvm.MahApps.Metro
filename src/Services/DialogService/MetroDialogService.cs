@@ -8,11 +8,19 @@ namespace DevExpress.Mvvm.UI
     /// Provides asynchronous methods to show and manage dialogs using MahApps.Metro dialog coordinator.
     /// Extends ViewServiceBase and implements IAsyncDialogService interface.
     /// </summary>
-    public class MetroDialogService: ViewServiceBase, IAsyncDialogService
+    public class MetroDialogService : ViewServiceBase, IAsyncDialogService
     {
-        public static readonly DependencyProperty DialogCoordinatorProperty =
-            DependencyProperty.Register(nameof(DialogCoordinator), typeof(IDialogCoordinator), typeof(MetroDialogService),
-                new PropertyMetadata(null));
+        #region Dependency Properties
+
+        /// <summary>
+        /// Identifies the <see cref="DialogCoordinator"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty DialogCoordinatorProperty = DependencyProperty.Register(
+            nameof(DialogCoordinator), typeof(IDialogCoordinator), typeof(MetroDialogService));
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// Gets or sets the DialogCoordinator used to manage dialog interactions.
@@ -22,6 +30,8 @@ namespace DevExpress.Mvvm.UI
             get => (IDialogCoordinator)GetValue(DialogCoordinatorProperty);
             set => SetValue(DialogCoordinatorProperty, value);
         }
+
+        #endregion
 
         #region Methods
 
@@ -39,7 +49,8 @@ namespace DevExpress.Mvvm.UI
         public async ValueTask<UICommand?> ShowDialogAsync(IEnumerable<UICommand> dialogCommands, string? title, string? documentType, object? viewModel, object? parameter, object? parentViewModel, CancellationToken cancellationToken = default)
         {
             Debug.Assert(DialogCoordinator != null, $"{nameof(DialogCoordinator)} is null");
-            object view = CreateAndInitializeView(documentType, viewModel, parameter, parentViewModel);
+
+            var view = CreateAndInitializeView(documentType, viewModel, parameter, parentViewModel);
 
             var dialogSettings = new MetroDialogSettings { CancellationToken = cancellationToken };
             var dialog = new MetroDialog(dialogSettings)

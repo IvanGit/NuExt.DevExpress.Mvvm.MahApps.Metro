@@ -39,7 +39,7 @@
           Stroke="{Binding BorderColorBrush, Mode=OneWay}"
           StrokeThickness="1" >
         <d:Ellipse.DataContext>
-            <x:Type Type="mvvm:IAccentColorMenuItemViewModel" />
+            <x:Type Type="mvvm:IAppThemeMenuItemViewModel" />
         </d:Ellipse.DataContext>
     </Ellipse>
 

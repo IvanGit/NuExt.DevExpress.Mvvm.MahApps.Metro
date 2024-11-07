@@ -16,7 +16,7 @@
                  TitleCharacterCasing="Normal"
                  WindowStartupLocation="CenterScreen"
                  WindowTransitionsEnabled="False"
-                 Title="{Binding Path=Title}" Height="450" Width="800" MinHeight="450" MinWidth="800">
+                 Title="{Binding Title, TargetNullValue='Untitled'}" Height="450" Width="800" MinHeight="450" MinWidth="800">
     <mah:MetroWindow.IconTemplate>
         <DataTemplate>
             <iconPacks:PackIconMaterial Kind="VideoVintage" Margin="4" Width="30" Height="30" 
@@ -27,15 +27,18 @@
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:DispatcherService x:Name="MainDispatcherService"/>
         <dxmvvm:MessageBoxService x:Name="MainMessageBoxService" />
-        <dxmvvm:CurrentWindowService ClosingCommand="{Binding ClosingCommand}"/>
         <dxmvvm:DialogCoordinatorService x:Name="DialogCoordinatorService"/>
         <dxmvvm:MetroDialogService DialogCoordinator="{Binding Source={x:Reference DialogCoordinatorService}}"/>
+        <dxmvvm:CurrentWindowService ClosingCommand="{Binding ClosingCommand}"/>
         <dxmvvm:EventToCommand EventName="ContentRendered" Command="{Binding ContentRenderedCommand}"/>
-        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding LoadedCommand}" />
-        <dxmvvm:WindowPlacementService FileName="MainWindow" DirectoryName="{Binding EnvironmentService.SettingsDirectory}"
+        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding LoadedCommand}"/>
+        <dxmvvm:KeyToCommand KeyGesture="CTRL+O" Command="{Binding ShowMoviesCommand}"/>
+        <dxmvvm:WindowPlacementService FileName="MainWindow" 
+                                       DirectoryName="{Binding EnvironmentService.SettingsDirectory, FallbackValue={x:Null}}"
                                        PlacementRestoredCommand="{Binding PlacementRestoredCommand}" 
                                        PlacementSavedCommand="{Binding PlacementSavedCommand}"/>
-        <dxmvvm:SettingsService Prefix="MainWindow" DirectoryName="{Binding EnvironmentService.SettingsDirectory}"/>
+        <dxmvvm:SettingsService Prefix="MainWindow" 
+                                DirectoryName="{Binding EnvironmentService.SettingsDirectory, FallbackValue={x:Null}}"/>
     </dxmvvm:Interaction.Behaviors>
     <Grid>
         <Grid.RowDefinitions>

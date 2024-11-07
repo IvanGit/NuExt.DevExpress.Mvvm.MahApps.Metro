@@ -1,6 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using MetroWpfApp.Converters;
+using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
-using MetroWpfApp.Converters;
 
 namespace MetroWpfApp.Models
 {

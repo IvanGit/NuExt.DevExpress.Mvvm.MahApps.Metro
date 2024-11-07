@@ -42,6 +42,7 @@ namespace MetroWpfApp.Services
 
         public ValueTask<bool> AddAsync(MovieModelBase model, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             PlainMovieList!.Add(model);
             model.Parent?.Items.Add(model);
             return new ValueTask<bool>(true);
@@ -49,10 +50,15 @@ namespace MetroWpfApp.Services
 
         public ValueTask<bool> DeleteAsync(MovieModelBase model, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             bool result = PlainMovieList!.Remove(model);
-            if (result && model.Parent != null)
+            if (result)
             {
-                model.Parent.Items.Remove(model);
+                model.Parent?.Items.Remove(model);
+                if (model is MovieGroupModel group)
+                {
+                    group.Items.Clear();
+                }
             }
             return new ValueTask<bool>(result);
         }
@@ -65,7 +71,7 @@ namespace MetroWpfApp.Services
                 var children = lookup[parent];
                 foreach (var child in children)
                 {
-                    if (processedItems.Add(child) == false)
+                    if (!processedItems.Add(child))
                     {
                         //Debug.Assert(false);
                         continue;
@@ -83,6 +89,7 @@ namespace MetroWpfApp.Services
                 }
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
 
             var rootGroup = new MovieGroupModel() { IsRoot = true, Name = "Movies" };
             var list = new List<MovieModelBase>() { rootGroup };
@@ -109,6 +116,8 @@ namespace MetroWpfApp.Services
 
         public ValueTask InitializeAsync(CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var movies = JsonSerializer.Deserialize<List<MovieModelBase>>(File.ReadAllText(SourceFilePath), _options);
 
             PlainMovieList = movies!.AsPlainList();
@@ -138,6 +147,8 @@ namespace MetroWpfApp.Services
 
         public ValueTask<bool> SaveAsync(MovieModelBase original, MovieModelBase clone, CancellationToken cancellationToken)
         {
+            _ = this;
+            cancellationToken.ThrowIfCancellationRequested();
             original.UpdateFrom(clone);
             return new ValueTask<bool>(true);
         }

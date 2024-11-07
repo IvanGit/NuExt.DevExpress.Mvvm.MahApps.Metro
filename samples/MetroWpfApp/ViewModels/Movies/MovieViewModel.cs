@@ -1,6 +1,7 @@
 ﻿using DevExpress.Mvvm;
 using MetroWpfApp.Models;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace MetroWpfApp.ViewModels
 {
@@ -8,7 +9,7 @@ namespace MetroWpfApp.ViewModels
     {
         #region Properties
 
-        public MovieModel Movie => (MovieModel)Parameter;
+        public MovieModel Movie => (MovieModel)Parameter!;
 
         #endregion
 
@@ -28,6 +29,7 @@ namespace MetroWpfApp.ViewModels
 
         protected override ValueTask OnInitializeAsync(CancellationToken cancellationToken)
         {
+            Debug.Assert(Parameter is MovieModel);
             Lifetime.AddBracket(() => Movie.PropertyChanged += Movie_PropertyChanged,
                 () => Movie.PropertyChanged -= Movie_PropertyChanged);
             UpdateTitle();

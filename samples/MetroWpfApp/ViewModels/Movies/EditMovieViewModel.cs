@@ -9,16 +9,15 @@ namespace MetroWpfApp.ViewModels
     {
         #region Properties
 
-        public MovieModel Movie => (MovieModel)Parameter;
+        public MovieModel Movie => (MovieModel)Parameter!;
 
         #endregion
 
         #region Services
 
-        public IMoviesService MoviesService => GetService<IMoviesService>();
+        public IMoviesService MoviesService => GetService<IMoviesService>()!;
 
         #endregion
-
 
         #region Methods
 

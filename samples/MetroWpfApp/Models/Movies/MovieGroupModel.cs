@@ -58,7 +58,7 @@ namespace MetroWpfApp.Models
             {
                 return false;
             }
-            if (model == this || model.Parent == this)
+            if (model == this || model.Parent == this || model.Parent == null && IsRoot)
             {
                 return false;
             }
@@ -76,20 +76,17 @@ namespace MetroWpfApp.Models
 
         protected override bool OnDrop(MovieModelBase model)
         {
-            if (model.Parent?.Items.Remove(model) == true)
+            model.Parent?.Items.Remove(model);
+            if (IsRoot == false)
             {
-                if (IsRoot == false)
-                {
-                    Items.Add(model);
-                    model.Parent = this;
-                }
-                else
-                {
-                    model.Parent = null;
-                }
-                return true;
+                Items.Add(model);
+                model.Parent = this;
             }
-            return false;
+            else
+            {
+                model.Parent = null;
+            }
+            return true;
         }
 
         public override void UpdateFrom(MovieModelBase clone)

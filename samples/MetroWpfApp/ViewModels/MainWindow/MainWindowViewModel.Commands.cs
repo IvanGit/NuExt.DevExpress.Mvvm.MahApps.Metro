@@ -29,6 +29,18 @@ namespace MetroWpfApp.ViewModels
             private set { SetProperty(() => ChangeAppThemeCommand, value); }
         }
 
+        public ICommand? CloseActiveDocumentCommand
+        {
+            get => GetProperty(() => CloseActiveDocumentCommand);
+            private set { SetProperty(() => CloseActiveDocumentCommand, value); }
+        }
+
+        public ICommand? ShowHideActiveDocumentCommand
+        {
+            get => GetProperty(() => ShowHideActiveDocumentCommand);
+            private set { SetProperty(() => ShowHideActiveDocumentCommand, value); }
+        }
+
         public ICommand? ShowMoviesCommand
         {
             get => GetProperty(() => ShowMoviesCommand);
@@ -39,18 +51,43 @@ namespace MetroWpfApp.ViewModels
 
         #region Command Methods
 
+        private bool CanCloseActiveDocument()
+        {
+            return IsUsable && ActiveDocument != null;
+        }
+
+        private async Task CloseActiveDocumentAsync()
+        {
+            await ActiveDocument!.CloseAsync();
+        }
+
+        private bool CanShowHideActiveDocument(bool show)
+        {
+            return IsUsable && ActiveDocument != null;
+        }
+
+        private void ShowHideActiveDocument(bool show)
+        {
+            if (show)
+            {
+                ActiveDocument?.Show();
+            }
+            else
+            {
+                ActiveDocument?.Hide();
+            }
+        }
+
         private bool CanShowMovies()
         {
-            return IsUsable;
+            return IsUsable && DocumentManagerService != null;
         }
 
         private async Task ShowMoviesAsync()
         {
-            var command = GetAsyncCommand();
-            Debug.Assert(command == ShowMoviesCommand);
-            var cancellationToken = command!.CancellationTokenSource.Token;
+            var cancellationToken = GetCurrentCancellationToken();
 
-            var document = await DocumentManagerService.FindDocumentByIdOrCreateAsync(default(Movies),
+            var document = await DocumentManagerService!.FindDocumentByIdOrCreateAsync(default(Movies),
                 async x =>
                 {
                     var vm = new MoviesViewModel();
@@ -77,7 +114,7 @@ namespace MetroWpfApp.ViewModels
 
         private bool CanChangeAccentColor(string? colorScheme)
         {
-            return IsUsable && !string.IsNullOrEmpty(colorScheme);
+            return IsUsable;
         }
 
         private static void ChangeAccentColor(string? colorScheme)
@@ -90,7 +127,7 @@ namespace MetroWpfApp.ViewModels
 
         private bool CanChangeAppTheme(string? baseColorScheme)
         {
-            return IsUsable && !string.IsNullOrEmpty(baseColorScheme);
+            return IsUsable;
         }
 
         private static void ChangeAppTheme(string? baseColorScheme)
@@ -101,11 +138,28 @@ namespace MetroWpfApp.ViewModels
             }
         }
 
+        #endregion
+
+        #region Methods
+
+        protected override void CreateCommands()
+        {
+            base.CreateCommands();
+            ActiveDocumentChangedCommand = RegisterCommand(UpdateTitle);
+            ChangeAccentColorCommand = RegisterCommand<string?>(ChangeAccentColor, CanChangeAccentColor);
+            ChangeAppThemeCommand = RegisterCommand<string?>(ChangeAppTheme, CanChangeAppTheme);
+            ShowMoviesCommand = RegisterAsyncCommand(ShowMoviesAsync, CanShowMovies);
+            ShowHideActiveDocumentCommand = RegisterCommand<bool>(ShowHideActiveDocument, CanShowHideActiveDocument);
+            CloseActiveDocumentCommand = RegisterAsyncCommand(CloseActiveDocumentAsync, CanCloseActiveDocument);
+        }
+
         protected override async ValueTask OnContentRenderedAsync(CancellationToken cancellationToken)
         {
             await base.OnContentRenderedAsync(cancellationToken);
             Debug.Assert(ApplicationService != null, $"{nameof(ApplicationService)} is null");
             Debug.Assert(DocumentManagerService is IAsyncDisposable, $"{nameof(DocumentManagerService)} is not {nameof(IAsyncDisposable)}");
+            Debug.Assert(EnvironmentService != null, $"{nameof(EnvironmentService)} is null");
+            Debug.Assert(MessageBoxService != null, $"{nameof(MessageBoxService)} is null");
             Debug.Assert(SettingsService != null, $"{nameof(SettingsService)} is null");
 
             Debug.Assert(CheckAccess());
@@ -118,7 +172,7 @@ namespace MetroWpfApp.ViewModels
 
             await MoviesService.InitializeAsync(cancellationToken);
 
-            Debug.Assert(Settings.IsSuspended == false);
+            Debug.Assert(Settings!.IsSuspended == false);
             if (Settings.MoviesOpened)
             {
                 ShowMoviesCommand?.Execute(null);
@@ -128,19 +182,8 @@ namespace MetroWpfApp.ViewModels
         protected override void OnLoaded()
         {
             base.OnLoaded();
-            LoadSettings();
-        }
-
-        #endregion
-
-        #region Methods
-
-        private void CreateCommands()
-        {
-            ActiveDocumentChangedCommand = RegisterCommand(UpdateTitle);
-            ChangeAccentColorCommand = RegisterCommand<string?>(ChangeAccentColor, CanChangeAccentColor);
-            ChangeAppThemeCommand = RegisterCommand<string?>(ChangeAppTheme, CanChangeAppTheme);
-            ShowMoviesCommand = RegisterAsyncCommand(ShowMoviesAsync, CanShowMovies);
+            CreateSettings();
+            UpdateTitle();
         }
 
         #endregion

@@ -13,77 +13,47 @@ namespace MahApps.Metro.Controls.Dialogs
     {
         #region Dependency Properties
 
-        /// <summary>Identifies the <see cref="AffirmativeButtonText"/> dependency property.</summary>
-        public static readonly DependencyProperty AffirmativeButtonTextProperty = DependencyProperty.Register(
-            nameof(AffirmativeButtonText),
-            typeof(string),
-            typeof(MetroDialog),
-            new PropertyMetadata("OK"));
-
-        public string AffirmativeButtonText
-        {
-            get => (string)GetValue(AffirmativeButtonTextProperty);
-            set => SetValue(AffirmativeButtonTextProperty, value);
-        }
-
-        /// <summary>Identifies the <see cref="NegativeButtonText"/> dependency property.</summary>
-        public static readonly DependencyProperty NegativeButtonTextProperty = DependencyProperty.Register(
-            nameof(NegativeButtonText),
-            typeof(string),
-            typeof(MetroDialog),
-            new PropertyMetadata("Cancel"));
-
-        public string NegativeButtonText
-        {
-            get => (string)GetValue(NegativeButtonTextProperty);
-            set => SetValue(NegativeButtonTextProperty, value);
-        }
-
         /// <summary>Identifies the <see cref="CommandsSource"/> dependency property.</summary>
         public static readonly DependencyProperty CommandsSourceProperty = DependencyProperty.Register(
-            nameof(CommandsSource),
-            typeof(IEnumerable),
-            typeof(MetroDialog),
-            new PropertyMetadata(null));
-
-        public IEnumerable? CommandsSource
-        {
-            get => (IEnumerable)GetValue(CommandsSourceProperty);
-            set => SetValue(CommandsSourceProperty, value);
-        }
+            nameof(CommandsSource), typeof(IEnumerable), typeof(MetroDialog));
 
         #endregion
 
         private readonly TaskCompletionSource<UICommand?> _tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private IDisposable? _cancellationTokenRegistration;
 
-        public MetroDialog()
-            : this(null, null)
+        public MetroDialog() : this(null, null)
         {
         }
 
-        public MetroDialog(MetroWindow? parentWindow)
-            : this(parentWindow, null)
+        public MetroDialog(MetroWindow? parentWindow) : this(parentWindow, null)
         {
         }
 
-        public MetroDialog(MetroDialogSettings? settings)
-            : this(null, settings)
+        public MetroDialog(MetroDialogSettings? settings) : this(null, settings)
         {
         }
 
-        public MetroDialog(MetroWindow? parentWindow, MetroDialogSettings? settings)
-            : base(parentWindow, settings)
+        public MetroDialog(MetroWindow? parentWindow, MetroDialogSettings? settings) : base(parentWindow, settings)
         {
             InitializeComponent();
-            SetCurrentValue(AffirmativeButtonTextProperty, DialogSettings.AffirmativeButtonText);
-            SetCurrentValue(NegativeButtonTextProperty, DialogSettings.NegativeButtonText);
         }
+
+        #region UI Commands
+
+        private UICommand? CancelCommand => CommandsSource?.Cast<UICommand>().FirstOrDefault(c => c.IsCancel);
+
+        private UICommand? DefaultCommand => CommandsSource?.Cast<UICommand>().FirstOrDefault(c => c.IsDefault);
+
+        #endregion
 
         #region Properties
 
-        private UICommand? CancelCommand => CommandsSource?.Cast<UICommand>().FirstOrDefault(c => c.IsCancel);
-        private UICommand? DefaultCommand => CommandsSource?.Cast<UICommand>().FirstOrDefault(c => c.IsDefault);
+        public IEnumerable? CommandsSource
+        {
+            get => (IEnumerable)GetValue(CommandsSourceProperty);
+            set => SetValue(CommandsSourceProperty, value);
+        }
 
         #endregion
 
@@ -149,7 +119,7 @@ namespace MahApps.Metro.Controls.Dialogs
         {
             if (DialogBottom != null && DialogButtons != null)
             {
-                foreach (Button button in DependencyObjectExtensions.FindChildren<Button>(DialogButtons))
+                foreach (Button button in DependencyObjectExtensions/*do not change to avoid using TreeHelper*/.FindChildren<Button>(DialogButtons))
                 {
                     if (button.Command is null && button.DataContext is UICommand command)
                     {
@@ -166,7 +136,7 @@ namespace MahApps.Metro.Controls.Dialogs
                 this.BeginInvoke(() =>
                 {
                     CleanUpHandlers();
-                    _tcs.TrySetResult(null!);
+                    _tcs.TrySetResult(null);
                 });
             });
         }

@@ -13,6 +13,20 @@
 
 The `MetroTabbedDocumentUIService` class is responsible for managing tabbed documents within a UI that utilizes the Metro design language. It extends the `DocumentUIServiceBase` and implements interfaces for asynchronous document management and disposal. This service allows for the creation, binding, and lifecycle management of tabbed documents within controls such as `MetroTabControl`, `UserControl`, and `Window`.
 
+### Installation
+
+You can install `NuExt.DevExpress.Mvvm.MahApps.Metro` via [NuGet](https://www.nuget.org/):
+
+```sh
+dotnet add package NuExt.DevExpress.Mvvm.MahApps.Metro
+```
+
+Or through the Visual Studio package manager:
+
+1. Go to `Tools -> NuGet Package Manager -> Manage NuGet Packages for Solution...`.
+2. Search for `NuExt.DevExpress.Mvvm.MahApps.Metro`.
+3. Click "Install".
+
 ### Usage Examples
 
 For comprehensive examples of how to use the package, refer to the [samples](samples) directory in the repository. These samples illustrate best practices for using DevExpress MVVM and MahApps.Metro with these extensions.
