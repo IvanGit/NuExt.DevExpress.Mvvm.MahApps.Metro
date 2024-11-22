@@ -25,7 +25,6 @@ namespace MetroWpfApp.ViewModels
             }
             Settings = new MoviesSettings();
             Settings.Initialize();
-            Settings.SuspendChanges();
             Lifetime.AddBracket(LoadSettings, SaveSettings);
         }
 
@@ -33,26 +32,20 @@ namespace MetroWpfApp.ViewModels
         {
             Debug.Assert(IsInitialized, $"{GetType().FullName} ({DisplayName ?? "Unnamed"}) ({GetHashCode()}) is not initialized.");
             Debug.Assert(SettingsService != null, $"{nameof(SettingsService)} is null");
-            if (Settings!.IsSuspended)
+            Debug.Assert(Settings != null, $"{nameof(Settings)} is null");
+            using (Settings!.SuspendDirty())
             {
-                Settings.ResumeChanges();
-                Debug.Assert(Settings.IsSuspended == false);
-                using (Settings.SuspendDirty())
-                {
-                    SettingsService!.LoadSettings(Settings);
-                }
+                SettingsService!.LoadSettings(Settings);
             }
         }
 
         private void SaveSettings()
         {
             Debug.Assert(SettingsService != null, $"{nameof(SettingsService)} is null");
-            if (Settings!.IsDirty)
+            Debug.Assert(Settings != null, $"{nameof(Settings)} is null");
+            if (Settings!.IsDirty && SettingsService!.SaveSettings(Settings))
             {
-                if (SettingsService!.SaveSettings(Settings))
-                {
-                    Settings.ResetDirty();
-                }
+                Settings.ResetDirty();
             }
         }
 
