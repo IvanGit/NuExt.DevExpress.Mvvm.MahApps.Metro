@@ -154,7 +154,7 @@ namespace MetroWpfApp.ViewModels
 
             var dialogSettings = new MetroDialogSettings { CancellationToken = cancellationToken };
 
-            var groupName = await DialogCoordinator!.ShowInputAsync(this, "New Group Name",
+            var groupName = await DialogCoordinator!.ShowInputAsync(this, "New Group",
                 "Enter new group name", dialogSettings);
             if (string.IsNullOrWhiteSpace(groupName))
             {
