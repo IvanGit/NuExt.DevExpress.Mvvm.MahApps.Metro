@@ -1,5 +1,7 @@
 ﻿using DevExpress.Mvvm;
+using DevExpress.Mvvm.UI;
 using System.Collections;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,6 +18,12 @@ namespace MahApps.Metro.Controls.Dialogs
         /// <summary>Identifies the <see cref="CommandsSource"/> dependency property.</summary>
         public static readonly DependencyProperty CommandsSourceProperty = DependencyProperty.Register(
             nameof(CommandsSource), typeof(IEnumerable), typeof(MetroDialog));
+
+        /// <summary>
+        /// Identifies the <see cref="ValidatesOnDataErrors"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ValidatesOnDataErrorsProperty = DependencyProperty.Register(
+            nameof(ValidatesOnDataErrors), typeof(bool), typeof(MetroDialog), new PropertyMetadata(false));
 
         #endregion
 
@@ -49,10 +57,24 @@ namespace MahApps.Metro.Controls.Dialogs
 
         #region Properties
 
+        /// <summary>
+        /// UI commands.
+        /// </summary>
         public IEnumerable? CommandsSource
         {
             get => (IEnumerable)GetValue(CommandsSourceProperty);
             set => SetValue(CommandsSourceProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the dialog should check for validation errors
+        /// when closing. If true, the dialog will prevent closing if there are validation errors.
+        /// This applies only if the ViewModel implements the <see cref="IDataErrorInfo"/> interface.
+        /// </summary>
+        public bool ValidatesOnDataErrors
+        {
+            get => (bool)GetValue(ValidatesOnDataErrorsProperty);
+            set => SetValue(ValidatesOnDataErrorsProperty, value);
         }
 
         #endregion
@@ -63,8 +85,11 @@ namespace MahApps.Metro.Controls.Dialogs
         {
             if (e.OriginalSource is Button { DataContext: UICommand command })
             {
-                CleanUpHandlers();
-                _tcs.TrySetResult(command);
+                if (command != DefaultCommand || !HasValidationErrors())
+                {
+                    CleanUpHandlers();
+                    _tcs.TrySetResult(command);
+                }
                 e.Handled = true;
             }
         }
@@ -81,15 +106,17 @@ namespace MahApps.Metro.Controls.Dialogs
             }
             else if (e.Key == Key.Enter)
             {
-                CleanUpHandlers();
-
                 var result = DefaultCommand;
                 if (e.OriginalSource is Button { DataContext: UICommand command })
                 {
                     result = command;
                 }
 
-                _tcs.TrySetResult(result);
+                if (result != DefaultCommand || !HasValidationErrors())
+                {
+                    CleanUpHandlers();
+                    _tcs.TrySetResult(result);
+                }
 
                 e.Handled = true;
             }
@@ -98,6 +125,20 @@ namespace MahApps.Metro.Controls.Dialogs
         #endregion
 
         #region Methods
+
+        private bool HasValidationErrors()
+        {
+            if (!ValidatesOnDataErrors)
+            {
+                return false;
+            }
+            var viewModel = ViewHelper.GetViewModelFromView(Content);
+            if (viewModel is not IDataErrorInfo errorInfo)
+            {
+                return false;
+            }
+            return !string.IsNullOrEmpty(errorInfo.Error);
+        }
 
         private void CleanUpHandlers()
         {

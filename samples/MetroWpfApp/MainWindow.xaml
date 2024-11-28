@@ -28,7 +28,8 @@
         <dxmvvm:DispatcherService x:Name="MainDispatcherService"/>
         <dxmvvm:MessageBoxService x:Name="MainMessageBoxService" />
         <dxmvvm:DialogCoordinatorService x:Name="DialogCoordinatorService"/>
-        <dxmvvm:MetroDialogService DialogCoordinator="{Binding Source={x:Reference DialogCoordinatorService}}"/>
+        <dxmvvm:MetroDialogService DialogCoordinator="{Binding Source={x:Reference DialogCoordinatorService}}"
+                                   ValidatesOnDataErrors="True"/>
         <dxmvvm:CurrentWindowService ClosingCommand="{Binding ClosingCommand}"/>
         <dxmvvm:EventToCommand EventName="ContentRendered" Command="{Binding ContentRenderedCommand}"/>
         <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding LoadedCommand}"/>

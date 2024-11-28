@@ -152,11 +152,12 @@ namespace MetroWpfApp
 
             ServiceContainer.RegisterService(new MoviesService(Path.Combine(EnvironmentService.BaseDirectory, "movies.json")));
 
-            var viewModel = new MainWindowViewModel() { };
+            var viewModel = new MainWindowViewModel();
             try
             {
+                var windows = new MainWindow { DataContext = viewModel };
                 await viewModel.SetParentViewModel(this).InitializeAsync(viewModel.CancellationTokenSource.Token);
-                new MainWindow { DataContext = viewModel }.Show();
+                windows.Show();
             }
             catch (Exception ex)
             {

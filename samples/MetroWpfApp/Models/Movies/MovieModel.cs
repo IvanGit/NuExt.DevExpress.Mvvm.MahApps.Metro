@@ -1,10 +1,12 @@
 ﻿using MetroWpfApp.Converters;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace MetroWpfApp.Models
 {
-    public sealed class MovieModel : MovieModelBase
+    public sealed class MovieModel : MovieModelBase, IDataErrorInfo
     {
         #region Properties
 
@@ -79,6 +81,55 @@ namespace MetroWpfApp.Models
             Storyline = movie.Storyline;
 
             RaisePropertyChanged(nameof(Director));
+        }
+
+        #endregion
+
+        #region IDataErrorInfo
+
+        private static readonly string[] s_validatableProperties = [nameof(Name), nameof(ReleaseDate)];
+
+        public string Error
+        {
+            get
+            {
+                IDataErrorInfo dataErrorInfo = this;
+                var sb = new ValueStringBuilder();
+                var separator = string.Empty;
+                foreach (var property in s_validatableProperties)
+                {
+                    var error = dataErrorInfo[property];
+                    if (string.IsNullOrEmpty(error)) continue;
+                    sb.Append(separator);
+                    sb.Append(error);
+                    separator = Environment.NewLine;
+                }
+                return sb.ToString();
+            }
+        }
+
+        string IDataErrorInfo.this[string columnName]
+        {
+            get
+            {
+                var sb = new ValueStringBuilder();
+                switch (columnName)
+                {
+                    case nameof(Name):
+                        if (string.IsNullOrWhiteSpace(Name))
+                        {
+                            sb.Append(string.Format("{0} cannot be null or empty.", "Name"));
+                        }
+                        break;
+                    case nameof(ReleaseDate):
+                        if (ReleaseDate < new DateTime(1895, 12, 25))
+                        {
+                            sb.Append(string.Format("{0} should be specified.", "Release Date"));
+                        }
+                        break;
+                }
+                return sb.ToString();
+            }
         }
 
         #endregion

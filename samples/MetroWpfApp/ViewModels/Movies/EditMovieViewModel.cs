@@ -1,11 +1,12 @@
 ﻿using DevExpress.Mvvm;
-using MetroWpfApp.Models;
-using System.Diagnostics;
 using MetroWpfApp.Interfaces.Services;
+using MetroWpfApp.Models;
+using System.ComponentModel;
+using System.Diagnostics;
 
 namespace MetroWpfApp.ViewModels
 {
-    internal sealed class EditMovieViewModel: ControlViewModel
+    internal sealed class EditMovieViewModel : ControlViewModel, IDataErrorInfo
     {
         #region Properties
 
@@ -27,6 +28,14 @@ namespace MetroWpfApp.ViewModels
             Debug.Assert(MoviesService != null, $"{nameof(MoviesService)} is null");
             return default;
         }
+
+        #endregion
+
+        #region IDataErrorInfo
+
+        public string Error => Movie.Error;
+
+        string IDataErrorInfo.this[string columnName] => null!;
 
         #endregion
     }

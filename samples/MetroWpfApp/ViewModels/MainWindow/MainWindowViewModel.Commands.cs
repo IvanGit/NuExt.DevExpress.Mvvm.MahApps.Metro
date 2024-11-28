@@ -156,19 +156,11 @@ namespace MetroWpfApp.ViewModels
         protected override async ValueTask OnContentRenderedAsync(CancellationToken cancellationToken)
         {
             await base.OnContentRenderedAsync(cancellationToken);
-            Debug.Assert(ApplicationService != null, $"{nameof(ApplicationService)} is null");
-            Debug.Assert(DocumentManagerService is IAsyncDisposable, $"{nameof(DocumentManagerService)} is not {nameof(IAsyncDisposable)}");
-            Debug.Assert(EnvironmentService != null, $"{nameof(EnvironmentService)} is null");
-            Debug.Assert(MessageBoxService != null, $"{nameof(MessageBoxService)} is null");
-            Debug.Assert(SettingsService != null, $"{nameof(SettingsService)} is null");
 
             Debug.Assert(CheckAccess());
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (DocumentManagerService is IAsyncDisposable asyncDisposable)
-            {
-                Lifetime.AddAsyncDisposable(asyncDisposable);
-            }
+            await LoadMenuAsync(cancellationToken);
 
             await MoviesService.InitializeAsync(cancellationToken);
 
