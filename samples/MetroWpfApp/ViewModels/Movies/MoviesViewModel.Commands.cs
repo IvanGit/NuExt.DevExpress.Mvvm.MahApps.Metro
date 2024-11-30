@@ -56,7 +56,7 @@ namespace MetroWpfApp.ViewModels
 
         #region Command Methods
 
-        private bool CanDelete() => CanEdit();
+        private bool CanDelete() => CanEdit() && ParentViewModel?.CloseMovieCommand != null;
 
         private async Task DeleteAsync()
         {
@@ -83,7 +83,7 @@ namespace MetroWpfApp.ViewModels
             {
                 if (itemToDelete is MovieModel movie)
                 {
-                    await ParentViewModel!.CloseMovieAsync(movie, cancellationToken);
+                    await ParentViewModel!.CloseMovieCommand!.ExecuteAsync(movie);
                 }
                 await ReloadMoviesAsync(cancellationToken);
                 var item = Movies!.FindByPath(parentPath);
@@ -214,13 +214,13 @@ namespace MetroWpfApp.ViewModels
 
         private bool CanOpenMovie(MovieModelBase? item)
         {
-            return IsUsable && item is MovieModel && ParentViewModel is not null;
+            return IsUsable && item is MovieModel && ParentViewModel?.OpenMovieCommand is not null;
         }
 
         private async Task OpenMovieAsync(MovieModelBase? item)
         {
             var cancellationToken = GetCurrentCancellationToken();
-            await ParentViewModel!.OpenMovieAsync((item as MovieModel)!, cancellationToken);
+            await ParentViewModel!.OpenMovieCommand!.ExecuteAsync(item as MovieModel);
         }
 
         private bool CanMove(MovieModelBase? draggedObject)

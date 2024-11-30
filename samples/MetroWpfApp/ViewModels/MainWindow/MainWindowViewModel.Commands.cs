@@ -1,5 +1,6 @@
 ﻿using ControlzEx.Theming;
 using DevExpress.Mvvm;
+using MetroWpfApp.Models;
 using MetroWpfApp.Views;
 using System.Diagnostics;
 using System.Windows;
@@ -45,6 +46,18 @@ namespace MetroWpfApp.ViewModels
         {
             get => GetProperty(() => ShowMoviesCommand);
             private set { SetProperty(() => ShowMoviesCommand, value); }
+        }
+
+        public IAsyncCommand? OpenMovieCommand
+        {
+            get => GetProperty(() => OpenMovieCommand);
+            private set { SetProperty(() => OpenMovieCommand, value); }
+        }
+
+        public IAsyncCommand? CloseMovieCommand
+        {
+            get => GetProperty(() => CloseMovieCommand);
+            private set { SetProperty(() => CloseMovieCommand, value); }
         }
 
         #endregion
@@ -138,6 +151,48 @@ namespace MetroWpfApp.ViewModels
             }
         }
 
+        private bool CanOpenMovie(MovieModel movie)
+        {
+            return IsUsable && DocumentManagerService != null;
+        }
+
+        private async Task OpenMovieAsync(MovieModel movie)
+        {
+            var cancellationToken = GetCurrentCancellationToken();
+
+            var document = await DocumentManagerService!.FindDocumentByIdOrCreateAsync(new MovieDocument(movie), async x =>
+            {
+                var vm = new MovieViewModel();
+                var doc = x.CreateDocument(nameof(MovieView), vm, movie, this);
+                doc.DestroyOnClose = true;
+                try
+                {
+                    await vm.InitializeAsync(cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    Debug.Assert(ex is OperationCanceledException, ex.Message);
+                    //await vm.DisposeAsync();
+                    if (doc is IAsyncDisposable asyncDisposable)
+                    {
+                        await asyncDisposable.DisposeAsync();
+                    }
+                    throw;
+                }
+                return doc;
+            });
+            document.Show();
+        }
+
+        private bool CanCloseMovie(MovieModel movie) => CanOpenMovie(movie);
+
+        private async Task CloseMovieAsync(MovieModel movie)
+        {
+            var doc = DocumentManagerService!.FindDocumentById(new MovieDocument(movie));
+            if (doc == null) return;
+            await doc.CloseAsync();
+        }
+
         #endregion
 
         #region Methods
@@ -151,6 +206,8 @@ namespace MetroWpfApp.ViewModels
             ShowMoviesCommand = RegisterAsyncCommand(ShowMoviesAsync, CanShowMovies);
             ShowHideActiveDocumentCommand = RegisterCommand<bool>(ShowHideActiveDocument, CanShowHideActiveDocument);
             CloseActiveDocumentCommand = RegisterAsyncCommand(CloseActiveDocumentAsync, CanCloseActiveDocument);
+            OpenMovieCommand = RegisterAsyncCommand<MovieModel>(OpenMovieAsync, CanOpenMovie);
+            CloseMovieCommand = RegisterAsyncCommand<MovieModel>(CloseMovieAsync, CanCloseMovie);
         }
 
         protected override async ValueTask OnContentRenderedAsync(CancellationToken cancellationToken)
