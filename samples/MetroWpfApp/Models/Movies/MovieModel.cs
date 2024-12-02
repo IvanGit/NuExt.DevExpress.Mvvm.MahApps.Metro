@@ -23,7 +23,7 @@ namespace MetroWpfApp.Models
         [JsonIgnore] public PersonModel? Director => Directors.FirstOrDefault();
 
         [JsonPropertyOrder(2)]
-        public ObservableCollection<PersonModel> Directors { get; set; } = new();
+        public ObservableCollection<PersonModel> Directors { get; set; } = [];
 
         [JsonIgnore]
         public override bool IsEditable => true;
@@ -47,7 +47,7 @@ namespace MetroWpfApp.Models
         }
 
         [JsonPropertyOrder(3)]
-        public ObservableCollection<PersonModel> Writers { get; set; } = new();
+        public ObservableCollection<PersonModel> Writers { get; set; } = [];
 
         #endregion
 
@@ -118,13 +118,13 @@ namespace MetroWpfApp.Models
                     case nameof(Name):
                         if (string.IsNullOrWhiteSpace(Name))
                         {
-                            sb.Append(string.Format("{0} cannot be null or empty.", "Name"));
+                            sb.Append(string.Format(Loc.Arg0_cannot_be_null_or_empty, Loc.Name));
                         }
                         break;
                     case nameof(ReleaseDate):
                         if (ReleaseDate < new DateTime(1895, 12, 25))
                         {
-                            sb.Append(string.Format("{0} should be specified.", "Release Date"));
+                            sb.Append(string.Format(Loc.Arg0_should_be_specified, Loc.Release_Date));
                         }
                         break;
                 }

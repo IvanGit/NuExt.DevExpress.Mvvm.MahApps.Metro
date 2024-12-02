@@ -9,13 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\NuExt.DevExpress.Mvvm.MahApps.Metro.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="5.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
     <PackageReference Include="NLog.Extensions.Logging" Version="5.3.15" />
-    <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="5.1.0" />
+    <PackageReference Include="NuExt.Minimal.Mvvm.SourceGenerator" Version="0.2.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
@@ -23,7 +23,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\NuExt.DevExpress.Mvvm.MahApps.Metro.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Config\local.en-US.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\local.en-US.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\local.ru-RU.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\nlog.config.json">

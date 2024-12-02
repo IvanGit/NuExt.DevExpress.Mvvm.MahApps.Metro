@@ -2,7 +2,7 @@
 
 namespace MetroWpfApp.Models
 {
-    public sealed class MoviesSettings: BindableSettings
+    public sealed class MoviesSettings : BindableSettings
     {
         public string? SelectedPath
         {

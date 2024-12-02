@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 
 namespace MetroWpfApp.Services
 {
-    internal sealed class MoviesService: IMoviesService
+    internal sealed class MoviesService : IMoviesService
     {
         private readonly JsonSerializerOptions _options = new()
         {
@@ -30,7 +30,7 @@ namespace MetroWpfApp.Services
 
         #region Properties
 
-        public List<PersonModel> Persons { get; } = new();
+        public List<PersonModel> Persons { get; } = [];
 
         private List<MovieModelBase>? PlainMovieList { get; set; }
 
@@ -91,7 +91,7 @@ namespace MetroWpfApp.Services
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var rootGroup = new MovieGroupModel() { IsRoot = true, Name = "Movies" };
+            var rootGroup = new MovieGroupModel() { IsRoot = true, Name = Loc.Movies };
             var list = new List<MovieModelBase>() { rootGroup };
 
             var lookup = PlainMovieList!.ToLookup(x => x.Parent);
@@ -106,7 +106,7 @@ namespace MetroWpfApp.Services
                     LookupItems(lookup, group.Items, group, processedItems);
                 }
                 lostItems = lostItems.Except(processedItems).ToList();
-                var lostGroup = new MovieGroupModel() { IsRoot = true, IsLost = true, Name = "Lost" };
+                var lostGroup = new MovieGroupModel() { IsRoot = true, IsLost = true, Name = Loc.Lost };
                 lostItems.ForEach(lostGroup.Items.Add);
                 list.Add(lostGroup);
             }
@@ -126,7 +126,7 @@ namespace MetroWpfApp.Services
                 AddUniquePersons(movie.Directors);
                 AddUniquePersons(movie.Writers);
             }
-            Persons.Sort((x, y) =>  string.Compare(x.Name, y.Name, StringComparison.Ordinal));
+            Persons.Sort((x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal));
 
             //var s = JsonSerializer.Serialize(movies, options);
             //File.WriteAllText(SourceFilePath, s);

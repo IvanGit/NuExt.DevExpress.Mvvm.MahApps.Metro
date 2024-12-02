@@ -6,9 +6,8 @@ using System.Windows;
 namespace MetroWpfApp.Models
 {
     [DebuggerDisplay("Name={Name}")]
-    public abstract class MovieModelBase: BindableBase, ICloneable<MovieModelBase>, IDragDrop
+    public abstract class MovieModelBase: ExpandableBase, ICloneable<MovieModelBase>, IDragDrop
     {
-
         #region Properties
 
         [JsonIgnore]
@@ -16,13 +15,6 @@ namespace MetroWpfApp.Models
 
         [JsonIgnore]
         public abstract bool IsEditable { get; }
-
-        [JsonIgnore]
-        public bool IsExpanded
-        {
-            get => GetProperty(() => IsExpanded);
-            set { SetProperty(() => IsExpanded, value); }
-        }
 
         [JsonPropertyOrder(0)]
         public abstract MovieKind Kind { get; }

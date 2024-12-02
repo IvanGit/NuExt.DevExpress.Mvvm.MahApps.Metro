@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace MetroWpfApp.Models
 {
-    public sealed class MovieGroupModel: MovieModelBase
+    public sealed class MovieGroupModel : MovieModelBase
     {
         #region Properties
 
@@ -20,7 +20,7 @@ namespace MetroWpfApp.Models
         public bool IsRoot { get; init; }
 
         [JsonPropertyOrder(2)]
-        public ObservableCollection<MovieModelBase> Items { get; set; } = new();
+        public ObservableCollection<MovieModelBase> Items { get; set; } = [];
 
         [JsonPropertyOrder(0)]
         public override MovieKind Kind => MovieKind.Group;
@@ -36,14 +36,14 @@ namespace MetroWpfApp.Models
 
         public void CollapseAll()
         {
-            IsExpanded = false;
+            Collapse();
             Items.OfType<MovieGroupModel>().ForEach(item => item.CollapseAll());
         }
 
-        public void Expand()
+        public override void Expand()
         {
             Parent?.Expand();
-            IsExpanded = true;
+            base.Expand();
         }
 
         public void ExpandAll()
