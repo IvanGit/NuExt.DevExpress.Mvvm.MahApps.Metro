@@ -1,10 +1,10 @@
-﻿using MetroWpfApp.Converters;
+﻿using MovieWpfApp.Converters;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace MetroWpfApp.Models
+namespace MovieWpfApp.Models
 {
     public sealed class MovieModel : MovieModelBase, IDataErrorInfo
     {
@@ -20,7 +20,8 @@ namespace MetroWpfApp.Models
             set { SetProperty(() => Description, value); }
         }
 
-        [JsonIgnore] public PersonModel? Director => Directors.FirstOrDefault();
+        [JsonIgnore]
+        public PersonModel? Director => Directors.FirstOrDefault();
 
         [JsonPropertyOrder(2)]
         public ObservableCollection<PersonModel> Directors { get; set; } = [];

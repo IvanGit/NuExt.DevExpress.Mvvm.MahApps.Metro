@@ -1,11 +1,11 @@
 ﻿using DevExpress.Mvvm;
 using DevExpress.Mvvm.UI;
-using MetroWpfApp.Interfaces.Services;
-using MetroWpfApp.Models;
-using MetroWpfApp.Services;
-using MetroWpfApp.ViewModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MovieWpfApp.Interfaces.Services;
+using MovieWpfApp.Models;
+using MovieWpfApp.Services;
+using MovieWpfApp.ViewModels;
 using NLog;
 using NLog.Extensions.Logging;
 using System.ComponentModel;
@@ -18,12 +18,12 @@ using System.Windows.Threading;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
-namespace MetroWpfApp
+namespace MovieWpfApp
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public sealed partial class App : Application, IApplicationService, IDispatcher, INotifyPropertyChanged
+    public sealed partial class App : IApplicationService, IDispatcher, INotifyPropertyChanged
     {
         private readonly CancellationTokenSource _cts = new();
         private readonly bool _createdNew;
@@ -159,9 +159,9 @@ namespace MetroWpfApp
             var viewModel = new MainWindowViewModel();
             try
             {
-                var windows = new MainWindow { DataContext = viewModel };
+                var window = new MainWindow { DataContext = viewModel };
                 await viewModel.SetParentViewModel(this).InitializeAsync(viewModel.CancellationTokenSource.Token);
-                windows.Show();
+                window.Show();
             }
             catch (Exception ex)
             {

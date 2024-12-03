@@ -1,10 +1,10 @@
 ﻿using DevExpress.Mvvm;
-using MetroWpfApp.Interfaces.Services;
-using MetroWpfApp.Models;
+using MovieWpfApp.Interfaces.Services;
+using MovieWpfApp.Models;
 using System.ComponentModel;
 using System.Diagnostics;
 
-namespace MetroWpfApp.ViewModels
+namespace MovieWpfApp.ViewModels
 {
     internal sealed class EditMovieViewModel : ControlViewModel, IDataErrorInfo
     {

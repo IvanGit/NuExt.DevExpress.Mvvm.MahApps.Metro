@@ -1,6 +1,6 @@
 ﻿using DevExpress.Mvvm;
 
-namespace MetroWpfApp.Interfaces.ViewModels
+namespace MovieWpfApp.Interfaces.ViewModels
 {
     public interface IMainWindowViewModel
     {

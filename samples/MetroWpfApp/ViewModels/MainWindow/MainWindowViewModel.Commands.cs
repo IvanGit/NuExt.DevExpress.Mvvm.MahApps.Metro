@@ -1,12 +1,12 @@
 ﻿using ControlzEx.Theming;
 using DevExpress.Mvvm;
-using MetroWpfApp.Models;
-using MetroWpfApp.Views;
+using MovieWpfApp.Models;
+using MovieWpfApp.Views;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 
-namespace MetroWpfApp.ViewModels
+namespace MovieWpfApp.ViewModels
 {
     partial class MainWindowViewModel
     {

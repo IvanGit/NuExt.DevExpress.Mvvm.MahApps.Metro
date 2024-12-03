@@ -1,6 +1,6 @@
 ﻿using DevExpress.Mvvm;
 
-namespace MetroWpfApp.Models
+namespace MovieWpfApp.Models
 {
     public sealed class MoviesSettings : BindableSettings
     {

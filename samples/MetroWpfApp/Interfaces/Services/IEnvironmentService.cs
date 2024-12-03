@@ -1,4 +1,4 @@
-﻿namespace MetroWpfApp.Interfaces.Services
+﻿namespace MovieWpfApp.Interfaces.Services
 {
     /// <summary>
     /// Provides access to various directories related to the application's environment, 

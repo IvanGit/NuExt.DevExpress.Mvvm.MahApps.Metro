@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Text.Json.Serialization;
 using System.Windows;
 
-namespace MetroWpfApp.Models
+namespace MovieWpfApp.Models
 {
     [DebuggerDisplay("Name={Name}")]
     public abstract class MovieModelBase: ExpandableBase, ICloneable<MovieModelBase>, IDragDrop
@@ -37,16 +37,26 @@ namespace MetroWpfApp.Models
 
         #region Methods
 
-        public bool CanDrop(IDragDrop draggedObject)
+        protected virtual bool CanDrop(MovieModelBase model)
         {
-            if (draggedObject is not MovieModelBase model) return false;
-            return OnCanDrop(model);
+            return false;
         }
 
-        public bool Drop(IDragDrop draggedObject)
+        protected virtual bool Drop(MovieModelBase model)
+        {
+            return false;
+        }
+
+        bool IDragDrop.CanDrop(IDragDrop draggedObject)
         {
             if (draggedObject is not MovieModelBase model) return false;
-            return OnCanDrop(model) && OnDrop(model);
+            return CanDrop(model);
+        }
+
+        bool IDragDrop.Drop(IDragDrop draggedObject)
+        {
+            if (draggedObject is not MovieModelBase model) return false;
+            return CanDrop(model) && Drop(model);
         }
 
         public abstract MovieModelBase Clone();
@@ -66,16 +76,6 @@ namespace MetroWpfApp.Models
                 parent = parent.Parent;
             }
             return path;
-        }
-
-        protected virtual bool OnCanDrop(MovieModelBase model)
-        {
-            return false;
-        }
-
-        protected virtual bool OnDrop(MovieModelBase model)
-        {
-            return false;
         }
 
         public abstract void UpdateFrom(MovieModelBase clone);

@@ -1,12 +1,12 @@
 ﻿using DevExpress.Mvvm;
-using MetroWpfApp.Interfaces.Services;
 using Minimal.Mvvm;
+using MovieWpfApp.Interfaces.Services;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.Json;
 
-namespace MetroWpfApp.Services
+namespace MovieWpfApp.Services
 {
     internal sealed class EnvironmentService(string baseDirectory, params string[] args)
         : EnvironmentServiceBase(baseDirectory, Path.Combine(baseDirectory, "AppData"), args), IEnvironmentService;

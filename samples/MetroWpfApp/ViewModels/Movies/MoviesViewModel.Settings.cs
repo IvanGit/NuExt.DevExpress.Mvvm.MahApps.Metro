@@ -1,7 +1,7 @@
-﻿using MetroWpfApp.Models;
+﻿using MovieWpfApp.Models;
 using System.Diagnostics;
 
-namespace MetroWpfApp.ViewModels
+namespace MovieWpfApp.ViewModels
 {
     internal partial class MoviesViewModel
     {

@@ -1,9 +1,9 @@
 ﻿using DevExpress.Mvvm;
-using MetroWpfApp.Models;
+using MovieWpfApp.Models;
 using System.ComponentModel;
 using System.Diagnostics;
 
-namespace MetroWpfApp.ViewModels
+namespace MovieWpfApp.ViewModels
 {
     internal sealed partial class MovieViewModel : DocumentContentViewModelBase
     {

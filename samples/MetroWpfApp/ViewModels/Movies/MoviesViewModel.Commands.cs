@@ -1,10 +1,10 @@
 ﻿using DevExpress.Mvvm;
 using MahApps.Metro.Controls.Dialogs;
-using MetroWpfApp.Models;
-using MetroWpfApp.Views;
+using MovieWpfApp.Models;
+using MovieWpfApp.Views;
 using System.Windows.Input;
 
-namespace MetroWpfApp.ViewModels
+namespace MovieWpfApp.ViewModels
 {
     internal partial class MoviesViewModel
     {
@@ -127,7 +127,6 @@ namespace MetroWpfApp.ViewModels
                     await using (var viewModel = new EditMovieViewModel())
                     {
                         await viewModel.SetParameter(movie).SetParentViewModel(this).InitializeAsync(cancellationToken);
-
                         var dlgResult = await DialogService!.ShowDialogAsync(MessageButton.OKCancel, Loc.Edit_Movie,
                             nameof(EditMovieView), viewModel, cancellationToken);
                         if (dlgResult != MessageResult.OK) 
@@ -207,7 +206,6 @@ namespace MetroWpfApp.ViewModels
             };
 
             await viewModel.SetParameter(movie).SetParentViewModel(this).InitializeAsync(cancellationToken);
-
             var dlgResult = await DialogService!.ShowDialogAsync(MessageButton.OKCancel, Loc.New_Movie, nameof(EditMovieView), viewModel, cancellationToken);
             if (dlgResult != MessageResult.OK)
             {
@@ -240,11 +238,11 @@ namespace MetroWpfApp.ViewModels
             return IsUsable && draggedObject?.CanDrag == true;
         }
 
-        private async Task MoveAsync(MovieModelBase? draggedObject)
+        private async Task MoveAsync(MovieModelBase draggedObject)
         {
             var cancellationToken = GetCurrentCancellationToken();
 
-            var path = draggedObject!.GetPath();
+            var path = draggedObject.GetPath();
             await ReloadMoviesAsync(cancellationToken);
             var item = Movies!.FindByPath(path);
             //item?.Expand();
@@ -274,7 +272,7 @@ namespace MetroWpfApp.ViewModels
             EditCommand = RegisterAsyncCommand(EditAsync, CanEdit);
             NewGroupCommand = RegisterAsyncCommand(NewGroupAsync, CanNewGroup);
             NewMovieCommand = RegisterAsyncCommand(NewMovieAsync, CanNewMovie);
-            MoveCommand = RegisterAsyncCommand<MovieModelBase?>(MoveAsync, CanMove);
+            MoveCommand = RegisterAsyncCommand<MovieModelBase>(MoveAsync, CanMove);
             OpenMovieCommand = RegisterAsyncCommand<MovieModelBase?>(OpenMovieAsync, CanOpenMovie);
             ExpandOrCollapseCommand = RegisterCommand<bool>(ExpandOrCollapse, _ => IsUsable);
         }

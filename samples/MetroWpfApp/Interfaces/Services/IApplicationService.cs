@@ -1,7 +1,7 @@
 ﻿using DevExpress.Mvvm;
-using MetroWpfApp.Models;
+using MovieWpfApp.Models;
 
-namespace MetroWpfApp.Interfaces.Services
+namespace MovieWpfApp.Interfaces.Services
 {
     public interface IApplicationService: ISupportServices
     {

@@ -1,13 +1,13 @@
-﻿using MetroWpfApp.Converters;
-using MetroWpfApp.Interfaces.Services;
-using MetroWpfApp.Models;
+﻿using MovieWpfApp.Converters;
+using MovieWpfApp.Interfaces.Services;
+using MovieWpfApp.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace MetroWpfApp.Services
+namespace MovieWpfApp.Services
 {
     internal sealed class MoviesService : IMoviesService
     {
