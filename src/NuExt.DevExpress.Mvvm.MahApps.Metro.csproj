@@ -14,7 +14,7 @@ DevExpress.Mvvm.UI.DialogCoordinatorService
 DevExpress.Mvvm.UI.MetroDialogService
 DevExpress.Mvvm.UI.MetroTabbedDocumentUIService
 MahApps.Metro.Controls.Dialogs.MetroDialog</Description>
-    <Version>0.2.6-pre</Version>
+    <Version>0.2.7-pre</Version>
     <RootNamespace>DevExpress.Mvvm</RootNamespace>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>

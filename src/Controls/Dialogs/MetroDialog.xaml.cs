@@ -11,7 +11,7 @@ namespace MahApps.Metro.Controls.Dialogs
     /// <summary>
     /// Interaction logic for MetroDialog.xaml
     /// </summary>
-    public partial class MetroDialog : BaseMetroDialog
+    public partial class MetroDialog
     {
         #region Dependency Properties
 
