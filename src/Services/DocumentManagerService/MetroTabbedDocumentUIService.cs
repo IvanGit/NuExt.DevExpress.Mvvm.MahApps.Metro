@@ -398,7 +398,7 @@ namespace DevExpress.Mvvm.UI
 
         public IAsyncDocument CreateDocument(string? documentType, object? viewModel, object? parameter, object? parentViewModel)
         {
-#if NET6_0_OR_GREATER
+#if NET
             ArgumentNullException.ThrowIfNull(ActualTarget);
 #else
             Throw.IfNull(ActualTarget);
