@@ -14,21 +14,13 @@ DevExpress.Mvvm.UI.DialogCoordinatorService
 DevExpress.Mvvm.UI.MetroDialogService
 DevExpress.Mvvm.UI.MetroTabbedDocumentUIService
 MahApps.Metro.Controls.Dialogs.MetroDialog</Description>
-    <Version>0.3.1-pre</Version>
+    <Version>0.3.2-pre</Version>
     <RootNamespace>DevExpress.Mvvm</RootNamespace>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>logo128.png</PackageIcon>
     <PackageProjectUrl>https://github.com/IvanGit/NuExt.DevExpress.Mvvm.MahApps.Metro</PackageProjectUrl>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net8.0'">
-    <DefineConstants>$(DefineConstants);NET</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">
-    <DefineConstants>$(DefineConstants);NET_OLD</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,7 +29,7 @@ MahApps.Metro.Controls.Dialogs.MetroDialog</Description>
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseNuExtPackages)' == 'true'">
-    <PackageReference Include="NuExt.DevExpress.Mvvm" Version="0.3.1" />
+    <PackageReference Include="NuExt.DevExpress.Mvvm" Version="0.3.2" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseNuExtPackages)' == 'false'">

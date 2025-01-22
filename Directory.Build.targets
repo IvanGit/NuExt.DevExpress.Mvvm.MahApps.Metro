@@ -1,12 +1,13 @@
 <Project>
-
   <ItemGroup>
-    <Compile Update="**\*.Commands.cs">
-      <DependentUpon>$([System.String]::Copy('%(Filename)').Replace('.Commands', '.cs'))</DependentUpon>
+    <CsFiles Include="**\*.*.cs" Exclude="**\*.xaml.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="@(CsFiles)">
+      <DependentUpon>$([System.Text.RegularExpressions.Regex]::Replace('%(Filename)', '\..*$', '.cs'))</DependentUpon>
     </Compile>
-    <Compile Update="**\*.Settings.cs">
-      <DependentUpon>$([System.String]::Copy('%(Filename)').Replace('.Settings', '.cs'))</DependentUpon>
+    <Compile Update="**\*BindingProxy.cs">
+      <DependentUpon>$([System.String]::Copy('%(Filename)').Replace('BindingProxy', '.cs'))</DependentUpon>
     </Compile>
   </ItemGroup>
-
 </Project>

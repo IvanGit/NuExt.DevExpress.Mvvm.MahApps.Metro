@@ -23,7 +23,7 @@ namespace MovieWpfApp
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public sealed partial class App : IApplicationService, IDispatcher, INotifyPropertyChanged
+    public sealed partial class App : IApplicationService, IDispatcherObject, INotifyPropertyChanged
     {
         private readonly CancellationTokenSource _cts = new();
         private readonly bool _createdNew;
