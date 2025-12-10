@@ -160,11 +160,8 @@ namespace DevExpress.Mvvm.UI
         /// <exception cref="ArgumentNullException">Thrown when the context is null.</exception>
         private MetroWindow GetMetroWindow(object context)
         {
-#if NET
             ArgumentNullException.ThrowIfNull(context);
-#else
-            Throw.IfNull(context);
-#endif
+
             return (GetActualWindow() as MetroWindow)!;
         }
 
