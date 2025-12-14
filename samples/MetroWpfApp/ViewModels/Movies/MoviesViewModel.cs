@@ -79,7 +79,10 @@ namespace MovieWpfApp.ViewModels
             base.OnError(ex, callerName);
 #pragma warning disable IDE0079
 #pragma warning disable CA2254
-            Logger.LogError(ex, Loc.An_error_has_occurred_in__Caller____Exception_, callerName, ex.Message);
+            if (Logger.IsEnabled(LogLevel.Error))
+            {
+                Logger.LogError(ex, Loc.An_error_has_occurred_in__Caller____Exception_, callerName, ex.Message);
+            }
 #pragma warning restore CA2254
 #pragma warning restore IDE0079
             var dialogSettings = new MetroDialogSettings
