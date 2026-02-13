@@ -28,7 +28,7 @@ namespace MovieWpfApp
         private readonly CancellationTokenSource _cts = new();
         private readonly bool _createdNew;
         private readonly EventWaitHandle _ewh;
-        private readonly AsyncLifetime _lifetime = new(continueOnCapturedContext: true);
+        private readonly Lifetime _lifetime = new();
 
         public App()
         {
@@ -84,17 +84,18 @@ namespace MovieWpfApp
             var logger = GetService<ILogger>();
             if (logger?.IsEnabled(LogLevel.Error) == true)
             {
-                logger.LogError(e.Exception, "Dispatcher Unhandled Exception: {Exception}.", e.Exception.Message);
+                logger.LogError(e.Exception, "Application Dispatcher Unhandled Exception: {Exception}.", e.Exception.Message);
             }
             e.Handled = true;
         }
 
-        private async void Application_Exit(object sender, ExitEventArgs e)
+        private void Application_Exit(object sender, ExitEventArgs e)
         {
             var logger = GetService<ILogger>();
             try
             {
-                await _lifetime.DisposeAsync();
+                _lifetime.Dispose();
+                Debug.Assert(OpenWindowsService!.ViewModels.Any() == false);
             }
             catch (Exception ex)
             {
@@ -122,6 +123,7 @@ namespace MovieWpfApp
             try
             {
                 await OpenWindowsService!.DisposeAsync();
+                Debug.Assert(OpenWindowsService!.ViewModels.Any() == false);
             }
             catch (Exception ex)
             {
@@ -150,7 +152,6 @@ namespace MovieWpfApp
             ServiceContainer.RegisterService(new DispatcherService() { Name = "AppDispatcherService" });
             ServiceContainer.RegisterService(this);
             //ServiceContainer.RegisterService(new OpenWindowsService());
-            _lifetime.AddAsyncDisposable(OpenWindowsService!);
 
             var configuration = BuildConfiguration(EnvironmentService);
             ServiceContainer.RegisterService(configuration);
@@ -167,6 +168,7 @@ namespace MovieWpfApp
             ServiceContainer.RegisterService(new MoviesService(Path.Combine(EnvironmentService.BaseDirectory, "movies.json")));
 
             var viewModel = new MainWindowViewModel();
+            viewModel.Disposing += OnDisposingAsync;
             try
             {
                 var window = new MainWindow { DataContext = viewModel };
@@ -184,6 +186,15 @@ namespace MovieWpfApp
 
             _ = Task.Run(() => WaitForNotifyAsync(_cts.Token), _cts.Token);
             _ = Task.Run(() => PerformanceMonitor.RunAsync(_cts.Token), _cts.Token);
+        }
+
+        private async ValueTask OnDisposingAsync(object? sender, EventArgs e, CancellationToken cancellationToken)
+        {
+            await OpenWindowsService!.DisposeAsync().ConfigureAwait(false);
+            if (sender is ViewModel viewModel)
+            {
+                viewModel.Disposing -= OnDisposingAsync;
+            }
         }
 
         private void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)

@@ -150,10 +150,7 @@ namespace MovieWpfApp.ViewModels
             Debug.Assert(MoviesService != null, $"{nameof(MoviesService)} is null");
             Debug.Assert(SettingsService != null, $"{nameof(SettingsService)} is null");
 
-            if (DocumentManagerService is IAsyncDisposable asyncDisposable)
-            {
-                Lifetime.AddAsyncDisposable(asyncDisposable);
-            }
+            Lifetime.AddAsyncDisposable(DocumentManagerService!);
 
             cancellationToken.ThrowIfCancellationRequested();
             return default;

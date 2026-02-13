@@ -30,7 +30,7 @@ namespace MovieWpfApp.ViewModels
         public MovieModelBase? SelectedItem
         {
             get => GetProperty(() => SelectedItem);
-            set { SetProperty(() => SelectedItem, value, OnSelectedItemChanged); }
+            set { SetProperty(() => SelectedItem, value); }
         }
 
         #endregion
@@ -50,18 +50,6 @@ namespace MovieWpfApp.ViewModels
         private IMainWindowViewModel? ParentViewModel => (this as ISupportParentViewModel).ParentViewModel as IMainWindowViewModel;
 
         private ISettingsService? SettingsService => GetService<ISettingsService>();
-
-        #endregion
-
-        #region Event Handlers
-
-        private void OnSelectedItemChanged(MovieModelBase? oldSelectedItem)
-        {
-            var newSelectedItem = SelectedItem;
-            if (newSelectedItem != null)
-            {
-            }
-        }
 
         #endregion
 
